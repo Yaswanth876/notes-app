@@ -6,15 +6,15 @@ function App() {
   const [notes, setNotes] = useState([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [editId, setEditId] = useState(null); // track which note is being edited
+  const [editId, setEditId] = useState(null);
 
   // Fetch all notes
   const fetchNotes = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/notes");
+      const res = await axios.get("https://notes-app-1dz8.onrender.com/api/notes");
       setNotes(res.data);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching notes:", err);
     }
   };
 
@@ -34,25 +34,25 @@ function App() {
     try {
       if (editId) {
         // Edit existing note
-        const res = await axios.put(`http://localhost:5000/api/notes/${editId}`, {
-          title,
-          description,
-        });
+        const res = await axios.put(
+          `https://notes-app-1dz8.onrender.com/api/notes/${editId}`,
+          { title, description }
+        );
         setNotes(notes.map((note) => (note._id === editId ? res.data : note)));
         setEditId(null);
       } else {
         // Add new note
-        const res = await axios.post("http://localhost:5000/api/notes", {
-          title,
-          description,
-        });
+        const res = await axios.post(
+          "https://notes-app-1dz8.onrender.com/api/notes",
+          { title, description }
+        );
         setNotes([...notes, res.data]);
       }
 
       setTitle("");
       setDescription("");
     } catch (err) {
-      console.error(err);
+      console.error("Error saving note:", err);
     }
   };
 
@@ -61,10 +61,10 @@ function App() {
     if (!window.confirm("Are you sure you want to delete this note?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/notes/${id}`);
+      await axios.delete(`https://notes-app-1dz8.onrender.com/api/notes/${id}`);
       setNotes(notes.filter((note) => note._id !== id));
     } catch (err) {
-      console.error(err);
+      console.error("Error deleting note:", err);
     }
   };
 
@@ -106,10 +106,7 @@ function App() {
               <p>{note.description}</p>
               <small>📅 {new Date(note.date).toLocaleString()}</small>
               <div>
-                <button
-                  onClick={() => handleEdit(note)}
-                  className="edit-btn"
-                >
+                <button onClick={() => handleEdit(note)} className="edit-btn">
                   ✏️ Edit
                 </button>
                 <button
