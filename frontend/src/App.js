@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./App.css";
 
+// Dynamically set API base URL based on environment
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000/api/notes";
+
 function App() {
   const [notes, setNotes] = useState([]);
   const [title, setTitle] = useState("");
@@ -11,7 +14,7 @@ function App() {
   // Fetch all notes
   const fetchNotes = async () => {
     try {
-      const res = await axios.get("https://notes-app-1dz8.onrender.com/api/notes");
+      const res = await axios.get(`${API_BASE_URL}`);
       setNotes(res.data);
     } catch (err) {
       console.error("Error fetching notes:", err);
@@ -35,17 +38,17 @@ function App() {
       if (editId) {
         // Edit existing note
         const res = await axios.put(
-          `https://notes-app-1dz8.onrender.com/api/notes/${editId}`,
+          `${API_BASE_URL}/${editId}`,
           { title, description }
         );
         setNotes(notes.map((note) => (note._id === editId ? res.data : note)));
         setEditId(null);
       } else {
         // Add new note
-        const res = await axios.post(
-          "https://notes-app-1dz8.onrender.com/api/notes",
-          { title, description }
-        );
+        const res = await axios.post(`${API_BASE_URL}`, {
+          title,
+          description,
+        });
         setNotes([...notes, res.data]);
       }
 
@@ -61,7 +64,7 @@ function App() {
     if (!window.confirm("Are you sure you want to delete this note?")) return;
 
     try {
-      await axios.delete(`https://notes-app-1dz8.onrender.com/api/notes/${id}`);
+      await axios.delete(`${API_BASE_URL}/${id}`);
       setNotes(notes.filter((note) => note._id !== id));
     } catch (err) {
       console.error("Error deleting note:", err);
